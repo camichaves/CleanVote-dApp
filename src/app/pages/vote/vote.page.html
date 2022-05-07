@@ -1,0 +1,69 @@
+<ion-header >
+  <ion-toolbar color="primary">
+    <ion-title>{{titulo}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="vista == 'nueva'">
+  <ion-item>
+    <ion-label position="stacked">Titulo de la Votación</ion-label>
+    <ion-input required
+    type="text" [(ngModel)] = "tituloVotacion"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Descripcion de la Votacion</ion-label>
+    <ion-input required
+    type="text" [(ngModel)] = "descripcionVotacion"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Cantidad de Votantes</ion-label>
+    <ion-input required
+    type="text" [(ngModel)] = "cantVotantesVotacion" ></ion-input>
+  </ion-item>
+  <ion-item  color="secondary">
+    <ion-title size="small">Candidatos</ion-title>
+  </ion-item>
+  <ion-toolbar>
+    <ion-item>
+      <ion-input
+      required
+      type="text"
+      [(ngModel)] = "nameCandidato1"
+      placeHolder="Nombre de un Candidato"
+    ></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+      required
+      type="text"
+      [(ngModel)] = "nameCandidato2"
+      placeHolder="Nombre de un Candidato"
+    ></ion-input>
+    </ion-item>
+  <ion-list lines="none">
+    <form [formGroup]="myForm">
+      <ion-item *ngFor="let control of myForm.controls | keyvalue">
+        <ion-input
+          required
+          type="text"
+          [formControlName]="control.key"
+          placeHolder="Nombre del Candidato!"
+        ></ion-input>
+        <ion-icon (click)="removeControl(control)" name="close-circle"></ion-icon>
+      </ion-item>
+    </form>
+  </ion-list>
+  <ion-buttons slot="end">
+    <ion-button expand="full" color="tertiary" shape="round" (click)="addControl()">
+      <ion-icon slot="icon-only" name="add"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+<div id="container">
+<ion-button (click)="crearVotacion()" shape="round">Crear Votacion</ion-button>
+</div>
+</ion-content>
+
+<ion-content  *ngIf="vista == 'existente'">
+</ion-content>
+

@@ -11,6 +11,18 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'vote',
+    loadChildren: () => import('./pages/vote/vote.module').then( m => m.VotePageModule)
+  },
+  {
+    path: 'vote-status',
+    loadChildren: () => import('./pages/vote-status/vote-status.module').then( m => m.VoteStatusPageModule)
+  },
+  {
+    path: 'add-vote',
+    loadChildren: () => import('./pages/add-vote/add-vote.module').then( m => m.AddVotePageModule)
+  },
 ];
 
 @NgModule({
