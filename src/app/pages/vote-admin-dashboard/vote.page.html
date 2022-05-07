@@ -18,7 +18,7 @@
   <ion-item>
     <ion-label position="stacked">Cantidad de Votantes</ion-label>
     <ion-input required
-    type="text" [(ngModel)] = "cantVotantesVotacion" ></ion-input>
+    type="number" [(ngModel)] = "cantVotantesVotacion" ></ion-input>
   </ion-item>
   <ion-item  color="secondary">
     <ion-title size="small">Candidatos</ion-title>
@@ -60,10 +60,49 @@
   </ion-buttons>
 </ion-toolbar>
 <div id="container">
-<ion-button (click)="crearVotacion()" shape="round">Crear Votacion</ion-button>
+<ion-button (click)="crearVotacion()"
+            [disabled]="tituloVotacion == undefined || descripcionVotacion.length < 5 == undefined  ||
+            cantVotantesVotacion  == undefined  || nameCandidato1 == undefined  || nameCandidato2 == undefined ||
+             tituloVotacion.length < 5 || descripcionVotacion.length < 5 ||  cantVotantesVotacion < 1 ||
+            nameCandidato1.length < 2 || nameCandidato2.length < 2"
+            shape="round">Crear Votacion</ion-button>
 </div>
 </ion-content>
 
-<ion-content  *ngIf="vista == 'existente'">
+<ion-content *ngIf="vista == 'existente'">
+  <ion-item>
+    <ion-label position="stacked">Titulo de la Votación</ion-label>
+    <ion-input disabled
+               type="text" [(ngModel)] = "vote.titleVote"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Descripcion de la Votacion</ion-label>
+    <ion-input required disabled
+               type="text" [(ngModel)] = "vote.description"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Cantidad de Votantes</ion-label>
+    <ion-input required disabled
+               type="number" [(ngModel)] = "vote.votantecount" ></ion-input>
+  </ion-item>
+  <ion-item  color="secondary">
+    <ion-title size="small">Candidatos</ion-title>
+  </ion-item>
+    <ion-item>
+      <ion-input
+        required
+        type="text"
+        [(ngModel)] = "nameCandidato1"
+        placeHolder="Nombre de un Candidato"
+      ></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        required
+        type="text"
+        [(ngModel)] = "nameCandidato2"
+        placeHolder="Nombre de un Candidato"
+      ></ion-input>
+    </ion-item>
 </ion-content>
 

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AutMetaService } from './aut-meta.service';
+import { Web3ConnectionsService } from './aut-meta.service';
 
 describe('AutMetaService', () => {
-  let service: AutMetaService;
+  let service: Web3ConnectionsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(AutMetaService);
+    service = TestBed.inject(Web3ConnectionsService);
   });
 
   it('should be created', () => {

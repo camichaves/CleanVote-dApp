@@ -13,7 +13,7 @@ const routes: Routes = [
   },
   {
     path: 'vote',
-    loadChildren: () => import('./pages/vote/vote.module').then( m => m.VotePageModule)
+    loadChildren: () => import('./pages/vote-admin-dashboard/vote.module').then(m => m.VotePageModule)
   },
   {
     path: 'vote-status',
