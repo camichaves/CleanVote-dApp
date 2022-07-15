@@ -8,86 +8,45 @@
   <ion-item>
     <ion-label position="stacked">Titulo de la Votación</ion-label>
     <ion-input required
-    type="text" [(ngModel)] = "tituloVotacion"></ion-input>
+               type="text" [(ngModel)] = "tituloVotacion"></ion-input>
   </ion-item>
   <ion-item>
     <ion-label position="stacked">Descripcion de la Votacion</ion-label>
     <ion-input required
-    type="text" [(ngModel)] = "descripcionVotacion"></ion-input>
+               type="text" [(ngModel)] = "descripcionVotacion"></ion-input>
   </ion-item>
-  <ion-item>
-    <ion-label position="stacked">Cantidad de Votantes</ion-label>
-    <ion-input required
-    type="number" [(ngModel)] = "cantVotantesVotacion" ></ion-input>
+
+  <ion-item  color="secondary">
+    <ion-title size="small">Votantes</ion-title>
   </ion-item>
+  <ion-toolbar>
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Cantidad de Votantes</ion-label>
+        <ion-input required
+                   type="number" [(ngModel)] = "cantVotantesVotacion" ></ion-input>
+      </ion-item>
+        <ion-item *ngFor="let e of [].constructor(cantVotantesVotacion); let i = index">
+          <ion-input
+            [disabled]="cantVotantesVotacion == undefined"
+            required
+            type="text"
+            [(ngModel)] = "emailsVotantes[i]"
+            placeHolder="Email del Votante "
+          ></ion-input>
+        </ion-item>
+    </ion-list>
+  </ion-toolbar>
+
+
+
+
+
+
   <ion-item  color="secondary">
     <ion-title size="small">Candidatos</ion-title>
   </ion-item>
   <ion-toolbar>
-    <ion-item>
-      <ion-input
-      required
-      type="text"
-      [(ngModel)] = "nameCandidato1"
-      placeHolder="Nombre de un Candidato"
-    ></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-input
-      required
-      type="text"
-      [(ngModel)] = "nameCandidato2"
-      placeHolder="Nombre de un Candidato"
-    ></ion-input>
-    </ion-item>
-  <ion-list lines="none">
-    <form [formGroup]="myForm">
-      <ion-item *ngFor="let control of myForm.controls | keyvalue">
-        <ion-input
-          required
-          type="text"
-          [formControlName]="control.key"
-          placeHolder="Nombre del Candidato!"
-        ></ion-input>
-        <ion-icon (click)="removeControl(control)" name="close-circle"></ion-icon>
-      </ion-item>
-    </form>
-  </ion-list>
-  <ion-buttons slot="end">
-    <ion-button expand="full" color="tertiary" shape="round" (click)="addControl()">
-      <ion-icon slot="icon-only" name="add"></ion-icon>
-    </ion-button>
-  </ion-buttons>
-</ion-toolbar>
-<div id="container">
-<ion-button (click)="crearVotacion()"
-            [disabled]="tituloVotacion == undefined || descripcionVotacion.length < 5 == undefined  ||
-            cantVotantesVotacion  == undefined  || nameCandidato1 == undefined  || nameCandidato2 == undefined ||
-             tituloVotacion.length < 5 || descripcionVotacion.length < 5 ||  cantVotantesVotacion < 1 ||
-            nameCandidato1.length < 2 || nameCandidato2.length < 2"
-            shape="round">Crear Votacion</ion-button>
-</div>
-</ion-content>
-
-<ion-content *ngIf="vista == 'existente'">
-  <ion-item>
-    <ion-label position="stacked">Titulo de la Votación</ion-label>
-    <ion-input disabled
-               type="text" [(ngModel)] = "vote.titleVote"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label position="stacked">Descripcion de la Votacion</ion-label>
-    <ion-input required disabled
-               type="text" [(ngModel)] = "vote.description"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label position="stacked">Cantidad de Votantes</ion-label>
-    <ion-input required disabled
-               type="number" [(ngModel)] = "vote.votantecount" ></ion-input>
-  </ion-item>
-  <ion-item  color="secondary">
-    <ion-title size="small">Candidatos</ion-title>
-  </ion-item>
     <ion-item>
       <ion-input
         required
@@ -104,5 +63,75 @@
         placeHolder="Nombre de un Candidato"
       ></ion-input>
     </ion-item>
+    <ion-list lines="none">
+      <form [formGroup]="myForm">
+        <ion-item *ngFor="let control of myForm.controls | keyvalue">
+          <ion-input
+            required
+            type="text"
+            [formControlName]="control.key"
+            placeHolder="Nombre del Candidato!"
+          ></ion-input>
+          <ion-icon (click)="removeControl(control)" name="close-circle"></ion-icon>
+        </ion-item>
+      </form>
+    </ion-list>
+    <ion-buttons slot="end">
+      <ion-button expand="full" color="tertiary" shape="round" (click)="addControl()">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <div id="container">
+    <ion-button (click)="crearVotacion()"
+                [disabled]="tituloVotacion == undefined || descripcionVotacion.length < 5 == undefined  ||
+           cantVotantesVotacion  == undefined  || nameCandidato1 == undefined  || nameCandidato2 == undefined ||
+            tituloVotacion.length < 5 || descripcionVotacion.length < 5 ||  cantVotantesVotacion < 1 ||
+           nameCandidato1.length < 2 || nameCandidato2.length < 2"
+                shape="round">Crear Votacion</ion-button>
+  </div>
 </ion-content>
 
+<ion-content *ngIf="vista == 'existente'">
+  <ion-button (click)="testBackend()">PROBAR</ion-button>
+  <ion-item>
+    <ion-label position="stacked">Titulo de la Votación</ion-label>
+    <ion-input disabled
+               type="text" [(ngModel)] = "vote.titleVote"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Descripcion de la Votacion</ion-label>
+    <ion-input required disabled
+               type="text" [(ngModel)] = "vote.description"></ion-input>
+  </ion-item>
+
+  <ion-item  color="secondary">
+    <ion-title size="small">Votantes</ion-title>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Cantidad de Votantes</ion-label>
+    <ion-input required disabled
+               type="number" [(ngModel)] = "vote.votantecount" ></ion-input>
+  </ion-item>
+
+  <ion-item  color="secondary">
+    <ion-title size="small">Candidatos</ion-title>
+  </ion-item>
+  <ion-item *ngFor="let c of nameCandidatosVotacion">
+    <ion-input
+      required disabled
+      type="text"
+      [value]="c"
+    ></ion-input>
+  </ion-item>
+  <br>
+  <ion-toolbar color="tertiary">
+    <ion-title>
+      Link para votar
+    </ion-title>
+  </ion-toolbar>
+  <ion-title>
+    <br>
+    <a target="_blank" href="http://localhost:4200/{{vote.owner}}/voter">http://localhost:4200/{{vote.owner}}/voter</a>
+  </ion-title>
+</ion-content>

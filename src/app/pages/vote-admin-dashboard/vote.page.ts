@@ -27,6 +27,7 @@ export class VotePage implements OnInit {
   isAuthenticating: boolean;
   private loading: HTMLIonLoadingElement;
   vote;
+  emailsVotantes = [];
 
   constructor(private formBuilder: FormBuilder, private authService: Web3ConnectionsService, private alertController: AlertController,
               private toastController: ToastController, public loadingController: LoadingController) {
@@ -44,8 +45,9 @@ export class VotePage implements OnInit {
       const checkVotacion = await this.authService.searchVote();
       if(checkVotacion){
        this.vote = await this.authService.getVoteByAdmin();
-        this.vista = 'existente';
+       this.nameCandidatosVotacion = await this.authService.getCandidatesByAdmin(this.vote.candidatecount);
         this.titulo = 'Votacion Actual';
+        this.vista = 'existente';
         console.log(this.vote.titleVote);
 
         this.loading.dismiss();
@@ -73,10 +75,13 @@ export class VotePage implements OnInit {
   }
 
   async crearVotacion(){
-
-    await this.authService.postVotacion(this.titulo, this.descripcionVotacion, this.cantVotantesVotacion, this.nameCandidato1,
-      this.nameCandidato2, this.myForm.value);
-
+    await this.presentLoading();
+    const txr = await this.authService.postVotacion(this.tituloVotacion, this.descripcionVotacion, this.cantVotantesVotacion, this.nameCandidato1,
+      this.nameCandidato2, this.myForm.value, this.emailsVotantes);
+    this.authService.sendMailsVotacion(txr).subscribe((r) => {
+      this.loading.dismiss();
+      location.reload();
+    });
   }
 
   addControl(){
@@ -109,6 +114,9 @@ export class VotePage implements OnInit {
       duration: 2000
     });
     toast.present();
+  }
+
+  async testBackend(){
   }
 
 

@@ -1,10 +1,9 @@
-import {Injectable, OnInit} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import detectEthereumProvider from '@metamask/detect-provider';
+import {Injectable} from '@angular/core';
 import Web3 from 'web3';
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+
 declare let window: any;
+const abiDecoder = require("web3-eth-abi");
 
 interface NonceResponse {
   nonce: string;
@@ -14,198 +13,257 @@ interface VerifyResponse {
   token: string;
 }
 
+class RequestMailsVotacion {
+  private votacionAddress: string;
+  private hash: string;
+  constructor(myadress: string, hash: string) {
+    this.hash = hash;
+    this.votacionAddress = myadress;
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class Web3ConnectionsService {
   abi;
   private myadress = '';
-  private contractAdres = '0xf5B6598cdB353Df498037e8252Fbfc17F36b4048';
+  private contractAdres = '0x42787b8254d66A862806F2536F129E3c0861192A';
   private contract;
   private tieneVot: boolean = null;
   private checkVotaciones: boolean;
   private titulo: string;
   private web3: Web3;
-  constructor() {
+  constructor(private httpClient: HttpClient) {
     this.abi =[
       {
-        anonymous: false,
-        inputs: [
+        "inputs": [
           {
-            indexed: true,
-            internalType: 'uint256',
-            name: '_candidateid',
-            type: 'uint256'
+            "internalType": "address",
+            "name": "ownerVotacion",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "_codigos",
+            "type": "bytes32[]"
           }
         ],
-        name: 'eventVote',
-        type: 'event'
+        "name": "cargaCodigosVotacion",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       },
       {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'ownerVotacion',
-            type: 'address'
-          },
-          {
-            internalType: 'bytes32',
-            name: '_codigos',
-            type: 'bytes32'
-          }
-        ],
-        name: 'cargaCodigosVotacion',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function'
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
       },
       {
-        inputs: [
+        "anonymous": false,
+        "inputs": [
           {
-            internalType: 'string',
-            name: '_titulo',
-            type: 'string'
-          },
-          {
-            internalType: 'string[]',
-            name: '_nameCandidatos',
-            type: 'string[]'
-          },
-          {
-            internalType: 'uint256',
-            name: 'cantVotantes',
-            type: 'uint256'
-          },
-          {
-            internalType: 'string',
-            name: '_descripcion',
-            type: 'string'
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "codigoGuardado",
+            "type": "bytes32"
           }
         ],
-        name: 'nuevaVotacion',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function'
+        "name": "codigoGenerado",
+        "type": "event"
       },
       {
-        inputs: [
+        "anonymous": false,
+        "inputs": [
           {
-            internalType: 'uint256',
-            name: '_candidateid',
-            type: 'uint256'
-          },
-          {
-            internalType: 'bytes32',
-            name: '_codigo',
-            type: 'bytes32'
-          },
-          {
-            internalType: 'address',
-            name: '_ownerAdr',
-            type: 'address'
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "codigoGuardado",
+            "type": "bytes32"
           }
         ],
-        name: 'vote',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function'
+        "name": "codigoGuardado",
+        "type": "event"
       },
       {
-        inputs: [],
-        stateMutability: 'nonpayable',
-        type: 'constructor'
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "_ownerAdr",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "string[]",
+            "name": "_emailsVotantes",
+            "type": "string[]"
+          }
+        ],
+        "name": "eventNewVotacion",
+        "type": "event"
       },
       {
-        inputs: [
+        "anonymous": false,
+        "inputs": [
           {
-            internalType: 'address',
-            name: '',
-            type: 'address'
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "_candidateid",
+            "type": "uint256"
           }
         ],
-        name: 'electiones',
-        outputs: [
-          {
-            internalType: 'string',
-            name: 'titleVote',
-            type: 'string'
-          },
-          {
-            internalType: 'address',
-            name: 'owner',
-            type: 'address'
-          },
-          {
-            internalType: 'uint256',
-            name: 'candidatecount',
-            type: 'uint256'
-          },
-          {
-            internalType: 'uint256',
-            name: 'votantecount',
-            type: 'uint256'
-          },
-          {
-            internalType: 'enum VoteCodeContract.state',
-            name: 'estado',
-            type: 'uint8'
-          },
-          {
-            internalType: 'string',
-            name: 'description',
-            type: 'string'
-          }
-        ],
-        stateMutability: 'view',
-        type: 'function'
+        "name": "eventVote",
+        "type": "event"
       },
       {
-        inputs: [
+        "inputs": [
           {
-            internalType: 'address',
-            name: 'ownerAdr',
-            type: 'address'
+            "internalType": "string",
+            "name": "_titulo",
+            "type": "string"
           },
           {
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256'
-          }
-        ],
-        name: 'getCandidatoNombre',
-        outputs: [
+            "internalType": "string[]",
+            "name": "_nameCandidatos",
+            "type": "string[]"
+          },
           {
-            internalType: 'string',
-            name: '',
-            type: 'string'
+            "internalType": "uint256",
+            "name": "cantVotantes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_descripcion",
+            "type": "string"
+          },
+          {
+            "internalType": "string[]",
+            "name": "_emailsVotantes",
+            "type": "string[]"
           }
         ],
-        stateMutability: 'view',
-        type: 'function'
+        "name": "nuevaVotacion",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       },
       {
-        inputs: [
+        "inputs": [
           {
-            internalType: 'address',
-            name: 'ownerAdr',
-            type: 'address'
+            "internalType": "uint256",
+            "name": "_candidateid",
+            "type": "uint256"
           },
           {
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256'
-          }
-        ],
-        name: 'getCandidatoVotos',
-        outputs: [
+            "internalType": "bytes",
+            "name": "_codigo",
+            "type": "bytes"
+          },
           {
-            internalType: 'uint256',
-            name: '',
-            type: 'uint256'
+            "internalType": "address",
+            "name": "_ownerAdr",
+            "type": "address"
           }
         ],
-        stateMutability: 'view',
-        type: 'function'
+        "name": "vote",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "electiones",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "titleVote",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "candidatecount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "votantecount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum VoteCodeContract.state",
+            "name": "estado",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "ownerAdr",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          }
+        ],
+        "name": "getCandidatoNombre",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "ownerAdr",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          }
+        ],
+        "name": "getCandidatoVotos",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
       }
     ];
   }
@@ -242,6 +300,7 @@ export class Web3ConnectionsService {
       this.myadress = addresses[0];
        this.web3 = new Web3(provider);
       console.log(this.web3);
+      this.contract = new this.web3.eth.Contract(this.abi, this.contractAdres);
       return true;
     }else{
       console.log('NO META');
@@ -252,7 +311,6 @@ export class Web3ConnectionsService {
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   async searchVote() {
-      this.contract = new this.web3.eth.Contract(this.abi, this.contractAdres);
 
       const met = await this.contract.methods.electiones(this.myadress).call();
 
@@ -265,7 +323,7 @@ export class Web3ConnectionsService {
   }
 
   async postVotacion(titulo: string, descripcionVotacion: string, cantVotantesVotacion: number, nameCandidato1: string, nameCandidato2: string,
-                     value: any) {
+                     value: any, emails: string []) {
     console.log(value);
     let c = []; let v = []; let clav = [];
     c[0] = nameCandidato1;
@@ -277,8 +335,17 @@ export class Web3ConnectionsService {
         c[d] =  value.candKeys[i];
       }
     }
-    const m =  await this.contract.methods.nuevaVotacion(titulo, c,cantVotantesVotacion, descripcionVotacion).send({ from: this.myadress });
+    console.log(emails);
+    const m =  await this.contract.methods.nuevaVotacion(titulo, c,cantVotantesVotacion, descripcionVotacion, emails).send({ from: this.myadress });
     console.log(m);
+
+    return  m.transactionHash;
+    // const p = new RequestMailsVotacion(this.myadress, m.blockHash);
+    // const r = await this.httpClient.post<any>( 'http://localhost:3001/mailsvotacion', p).toPromise( (rta) => {
+    //   console.log(rta);
+    //   return;
+    //      });
+
 
     // {
     //   "blockHash": "0xd02fb891fbe8d4027d0fda8bde217f1f88afe5660a9714e2e452586bab820635",
@@ -302,6 +369,97 @@ export class Web3ConnectionsService {
     console.log(met);
     return met;
   }
+
+  async getCandidates(candidatecount: number, address: string) {
+
+    let candidatos = []  ;
+    let limit = Number(candidatecount) +1;
+    for(let i = 1; i< limit; i++){
+      const candidate = await this.contract.methods.getCandidatoNombre(address, i).call();
+      candidatos[i] = candidate;
+    }
+    console.log(candidatos);
+    candidatos =  candidatos.filter((a) => a);
+    return candidatos;
+  }
+
+  async getVoteByVoter(addrr: any) {
+    const met =  await this.contract.methods.electiones(addrr).call();
+    console.log(met);
+    return met;
+  }
+
+  async votar(addrr: string, i: number, tkn: any) {
+    const met =  await this.contract.methods.vote(i, "0x" + tkn, addrr).send({ from: this.myadress });
+    console.log(met);
+    return met;
+  }
+
+  async obtenerVoto(transactionHash){
+    const rta = await this.web3.eth.getTransaction(transactionHash, function (error, result){console.log(result);});
+   // const trans = await this.contract.events.allEvents();
+    console.log(rta);
+    const inputs = [
+      {
+        internalType: 'uint256',
+        name: '_candidateid',
+        type: 'uint256'
+      },
+      {
+        internalType: 'bytes32',
+        name: '_codigo',
+        type: 'bytes32'
+      },
+      {
+        internalType: 'address',
+        name: '_ownerAdr',
+        type: 'address'
+      }
+    ];
+    const decoded = await this.web3.eth.abi.decodeParameters(
+      inputs,
+      rta.input.slice(10)); // Or (11), not sure
+    rta.value = await this.getCandidate(decoded[0], decoded[2]);
+    return rta;
+
+  }
+
+  private async getCandidate(candidateiD: any, ownerAdress) {
+      const candidate = await this.contract.methods.getCandidatoNombre(ownerAdress, candidateiD).call();
+    console.log(candidate);
+    return candidate;
+  }
+
+  async getCantVotos(candidatecount: number, addrr: string) {
+    let votos = []  ;
+    let limit = Number(candidatecount) +1;
+    for(let i = 1; i< limit; i++){
+      const voto = await this.contract.methods.getCandidatoVotos(addrr, i).call();
+      votos[i] = voto;
+    }
+    console.log(votos);
+    votos =  votos.filter((a) => a);
+    return votos;
+  }
+
+  async getCandidatesByAdmin(candidatecount: any) {
+    let candidatos = []  ;
+    let limit = Number(candidatecount) +1;
+    for(let i = 1; i< limit; i++){
+      const candidate = await this.contract.methods.getCandidatoNombre(this.myadress, i).call();
+      candidatos[i] = candidate;
+    }
+    console.log(candidatos);
+    candidatos =  candidatos.filter((a) => a);
+    return candidatos;
+  }
+
+   sendMailsVotacion(txn) {
+    const p = new RequestMailsVotacion(this.myadress, txn);
+    const r = this.httpClient.post<any>( 'http://localhost:3001/mailsvotacion', p);
+    return r;
+  }
+
 }
 
 

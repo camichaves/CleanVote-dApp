@@ -1,9 +1,44 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>addVote</ion-title>
+  <ion-toolbar color="tertiary">
+    <ion-title>¡Elije un Candidato para votar!</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <br>
+  <ion-card *ngFor="let candidato of nameCandidatosVotacion; let i = index" class="card-establecimiento">
+    <ion-card-header>
+      <ion-row class="ion-align-items-center">
+        <ion-col size="6">
+          <ion-badge color="warning" mode="ios">
+            {{i+1}}
+          </ion-badge>
+        </ion-col>
+        <ion-col size="6" class="ion-text-right">
+<!--          <ion-card-subtitle *ngIf="!est.enConstruccion" color="success">¡Disponible!</ion-card-subtitle>-->
+<!--          <ion-card-subtitle *ngIf="est.enConstruccion" color="warning">¡Proximamente!</ion-card-subtitle>-->
 
+        </ion-col>
+      </ion-row>
+    </ion-card-header>
+    <ion-card-content>
+      <!--        'data:image/bmp;base64,'+Base64.encode(blob);-->
+      <!--        <ion-img src="https://www.pngonly.com/wp-content/uploads/2017/06/Junk-Food-PNG-File.png"></ion-img>-->
+      <ion-img >
+<!--        style="height: 25vh!important" [src]=" 'data:image/bmp;base64,' + est.logo"-->
+      </ion-img>
+      <ion-row>
+        <ion-col size="6">
+          <ion-card-title >{{candidato}}</ion-card-title>
+          <!--            <ion-card-title>{{act.titulo}}</ion-card-title>-->
+<!--          <ion-card-subtitle>{{est.direccion}}</ion-card-subtitle>-->
+        </ion-col>
+        <ion-col size="6" class="ion-text-right">
+          <ion-button size="large" (click)="votar(i+1)">
+            VOTAR!
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
