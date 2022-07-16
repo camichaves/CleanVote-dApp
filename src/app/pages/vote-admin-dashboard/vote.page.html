@@ -93,7 +93,6 @@
 </ion-content>
 
 <ion-content *ngIf="vista == 'existente'">
-  <ion-button (click)="testBackend()">PROBAR</ion-button>
   <ion-item>
     <ion-label position="stacked">Titulo de la Votación</ion-label>
     <ion-input disabled
@@ -132,6 +131,6 @@
   </ion-toolbar>
   <ion-title>
     <br>
-    <a target="_blank" href="http://localhost:4200/{{vote.owner}}/voter">http://localhost:4200/{{vote.owner}}/voter</a>
+    <a target="_blank" href="http://localhost:4200/#/{{vote.owner}}/voter">http://localhost:4200/{{vote.owner}}/voter</a>
   </ion-title>
 </ion-content>

@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content color="primary">
   <ion-card *ngIf="voto != null" class="card-establecimiento">
     <ion-card-header>
       <ion-row class="ion-align-items-center">
@@ -14,33 +14,25 @@
           </ion-badge>
         </ion-col>
         <ion-col size="6" class="ion-text-right">
-          <!--          <ion-card-subtitle *ngIf="!est.enConstruccion" color="success">¡Disponible!</ion-card-subtitle>-->
-          <!--          <ion-card-subtitle *ngIf="est.enConstruccion" color="warning">¡Proximamente!</ion-card-subtitle>-->
-
         </ion-col>
       </ion-row>
     </ion-card-header>
     <ion-card-content>
-      <!--        'data:image/bmp;base64,'+Base64.encode(blob);-->
-      <!--        <ion-img src="https://www.pngonly.com/wp-content/uploads/2017/06/Junk-Food-PNG-File.png"></ion-img>-->
-      <ion-img >
-        <!--        style="height: 25vh!important" [src]=" 'data:image/bmp;base64,' + est.logo"-->
-      </ion-img>
       <ion-row>
-        <ion-col size="6">
+        <ion-col size="12" class="ion-text-left">
 
-          <ion-card-title color="primary" >Candidato: {{voto.value}}</ion-card-title>
-          <br>
-          <a target="_blank" href="https://testnet.bscscan.com/tx/{{hash}}">Link a etherscan</a>
-
-          <ion-card-title>transactionHash: {{hash}}</ion-card-title>
-          <br>
-                    <ion-card-subtitle>from: {{voto.from}}</ion-card-subtitle>
+        <ion-card-title>Candidato:</ion-card-title>
+          <ion-button>{{voto.value}}</ion-button>
         </ion-col>
-        <ion-col size="6" class="ion-text-right">
-<!--          <ion-button size="large" (click)="votar(i)">-->
-<!--            VOTAR!-->
-<!--          </ion-button>-->
+      </ion-row>
+      <ion-row>
+      <ion-col size="12" class="ion-text-right">
+      <a target="_blank" href="https://testnet.bscscan.com/tx/{{hash}}">Link a etherscan</a><br>
+
+          <ion-card-subtitle>transactionHash: {{hash}}
+          <br>
+          from: {{voto.from}}
+          </ion-card-subtitle>
         </ion-col>
       </ion-row>
     </ion-card-content>
